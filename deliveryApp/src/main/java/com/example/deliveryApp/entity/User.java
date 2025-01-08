@@ -21,4 +21,8 @@ public class User {
     private String userType;
     private boolean isDelete;
 
+    public User () {
+
+    }
+
 }
