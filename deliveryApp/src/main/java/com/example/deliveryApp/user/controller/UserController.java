@@ -17,15 +17,23 @@ public class UserController {
     //회원 가입 API
     @PostMapping("/signup")
     public ResponseEntity<String> userSignUp(@RequestBody SignUpRequestDto signUpRequestDto) {
-        userService.userSignUp(signUpRequestDto);
-        return new ResponseEntity<>("회원 가입이 완료 되었습니다.", HttpStatus.CREATED);
+        userService.userSignUp(signUpRequestDto); // 서비스의 회원가입 기능을 호출
+        return ResponseEntity.status(HttpStatus.CREATED).body("회원 가입이 완료 되었습니다.");
     }
 
     //회원 탈퇴 API
     @DeleteMapping("/{userId}")
     public ResponseEntity<String> disableAccount(
-            @PathVariable(name = "user_id") Long userId,
+            @PathVariable(name = "userId") Long userId, // PathVariable로 유저 Id 받기
             @RequestParam("password") String password) {
 
+        boolean isDelete = userService.disableAccount(userId, password); // 서비스의 회원탈퇴 기능을 호출
+
+        if(isDelete) {
+            return ResponseEntity.ok("회원탈퇴가 정상적으로 진행되었습니다.");
+        }else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("비밀번호가 일치하지 않습니다.");
+        }
     }
+
 }
