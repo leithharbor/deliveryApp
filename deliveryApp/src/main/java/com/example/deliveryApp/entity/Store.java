@@ -13,7 +13,7 @@ public class Store {
 
     private String storeName;
     private String openClose;
-    private int deliveryMinTime;
+    private int deliveryMinPrice;
     private boolean isDeletedStore;
 
     @ManyToOne
