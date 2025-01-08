@@ -1,7 +1,9 @@
 package com.example.deliveryApp.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 
+@Getter
 @Entity
 @Table(name = "menu")
 public class Menu {
