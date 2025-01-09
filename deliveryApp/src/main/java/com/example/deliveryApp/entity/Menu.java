@@ -2,15 +2,16 @@ package com.example.deliveryApp.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Entity
 @Table(name = "menu")
 public class Menu {
 
-    @Id
+    @Id @Setter
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     private String menuName;
     private int price;

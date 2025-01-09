@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 public class MenuResponseDto {
 
-    private final int id;
+    private final long id;
     private final String menuName;
     private final int price;
 

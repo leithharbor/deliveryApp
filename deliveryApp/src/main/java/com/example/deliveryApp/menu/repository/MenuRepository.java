@@ -7,9 +7,9 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.server.ResponseStatusException;
 
 @Repository
-public interface MenuRepository extends JpaRepository<Menu, Integer> {
+public interface MenuRepository extends JpaRepository<Menu, Long> {
     // Id로 메뉴 조회, 없으면 예외 발생
-    default Menu findByIdOrElseThrow(int id) {
+    default Menu findByIdOrElseThrow(long id) {
         return findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "메뉴가 없습니다."));
     }
 }
