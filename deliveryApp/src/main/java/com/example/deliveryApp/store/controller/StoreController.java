@@ -29,8 +29,14 @@ public class StoreController {
     // 가게 전체 조회
     @GetMapping
     public List<StoreGetResponseDto> getAllStoreAPI() {
-        List<StoreGetResponseDto> allStoreService = storeService.getAllStoreService();
-        return allStoreService;
+        List<StoreGetResponseDto> allStoresFound = storeService.getAllStoreService();
+        return allStoresFound;
+    }
+    // 가게 단건 조회
+    @GetMapping("/{storeId}")
+    public StoreGetResponseDto getStoreAPI(@PathVariable("storeId") Long storeId) {
+        StoreGetResponseDto storeFound = storeService.getStoreService(storeId);
+        return storeFound;
     }
 
 }

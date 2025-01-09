@@ -43,12 +43,23 @@ public class StoreService {
         List<Store> storeList = storeRepository.findAll();
         //dtoList로 변환하기 위한 선언
         List<StoreGetResponseDto> storeGetResponseDtoList = new ArrayList<>();
-        //storeList 한번씩 거쳐오기
+        //storeList 데이터 전부 하나씩 거치면서 가져오기
         for (Store store : storeList) {
             StoreGetResponseDto storeGetResponseDto = new StoreGetResponseDto(store.getId(), store.getStoreName(), store.getOpenClose(), store.getDeliveryMinPrice());
             storeGetResponseDtoList.add(storeGetResponseDto);
         } return storeGetResponseDtoList;
     }
-
+    // 가게 단건 조회
+    public StoreGetResponseDto getStoreService(Long storeId) {
+        // 1. 데이터베이스에 storeId로 해당 가게 조회
+        Store store = storeRepository.findById(storeId).orElseThrow(() -> new RuntimeException("가게를 찾을 수 없습니다."));
+        // 2. 가게 데이터 불러오기
+        Long id = store.getId();
+        String storeName = store.getStoreName();
+        String openClose = store.getOpenClose();
+        int deliveryMinPrice = store.getDeliveryMinPrice();
+        StoreGetResponseDto storeGetResponseDto = new StoreGetResponseDto(id, storeName, openClose, deliveryMinPrice);
+        return storeGetResponseDto;
+    }
 
 }
