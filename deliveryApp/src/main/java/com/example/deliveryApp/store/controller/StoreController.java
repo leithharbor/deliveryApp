@@ -1,9 +1,13 @@
 package com.example.deliveryApp.store.controller;
 
+import com.example.deliveryApp.store.dto.request.StoreCreateRequestDto;
+import com.example.deliveryApp.store.dto.response.StoreCreateResponseDto;
+import com.example.deliveryApp.store.dto.response.StoreGetResponseDto;
 import com.example.deliveryApp.store.service.StoreService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -16,6 +20,17 @@ public class StoreController {
         this.storeService = storeService;
     }
     // 기능
-
+    //가게 생성
+    @PostMapping
+    public StoreCreateResponseDto createStoreAPI(@RequestBody StoreCreateRequestDto storeCreateRequestDto) {
+        StoreCreateResponseDto createStore = storeService.createStoreService(storeCreateRequestDto);
+        return createStore;
+    }
+    // 가게 전체 조회
+    @GetMapping
+    public List<StoreGetResponseDto> getAllStoreAPI() {
+        List<StoreGetResponseDto> allStoreService = storeService.getAllStoreService();
+        return allStoreService;
+    }
 
 }
