@@ -8,13 +8,13 @@ import lombok.Getter;
 public class StoreCreateRequestDto {
     // 속성
     private String storeName;
-    private String openClose;
+    private String openCloseTime;
     private int deliveryMinPrice;
 
     // 생성자
-//    public StoreCreateRequestDto (String storeName, String openClose, int deliveryMinPrice) {
+//    public StoreCreateRequestDto (String storeName, String openCloseTime, int deliveryMinPrice) {
 //        this.storeName = storeName;
-//        this.openClose = openClose;
+//        this.openClose = openCloseTime;
 //        this.deliveryMinPrice= deliveryMinPrice;
 //    }
     // 기능

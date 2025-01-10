@@ -9,13 +9,13 @@ public class StoreCreateResponseDto {
     // 속성
     private Long id;
     private String storeName;
-    private String openClose;
+    private String openCloseTime;
     private int deliveryMinPrice;
     // 생성자
-//    public StoreCreateResponseDto (Long id, String storeName, String openClose, int deliveryMinPrice) {
+//    public StoreCreateResponseDto (Long id, String storeName, String openCloseTime, int deliveryMinPrice) {
 //        this.id = id;
 //        this.storeName = storeName;
-//        this.openClose = openClose;
+//        this.openClose = openCloseTime;
 //        this.deliveryMinPrice = deliveryMinPrice;
 //    }
     // 기능

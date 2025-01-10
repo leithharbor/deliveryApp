@@ -5,12 +5,9 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class StoreGetResponseDto {
-    //속
+public class StoreUpdateResponseDto {
     private Long id;
     private String storeName;
     private String openCloseTime;
-    private int deliveryMinPrice;
-
-
+    private int deliveryMinTime;
 }

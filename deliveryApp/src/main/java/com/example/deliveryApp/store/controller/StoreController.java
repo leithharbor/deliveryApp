@@ -1,8 +1,10 @@
 package com.example.deliveryApp.store.controller;
 
 import com.example.deliveryApp.store.dto.request.StoreCreateRequestDto;
+import com.example.deliveryApp.store.dto.request.StoreUpdateRequestDto;
 import com.example.deliveryApp.store.dto.response.StoreCreateResponseDto;
 import com.example.deliveryApp.store.dto.response.StoreGetResponseDto;
+import com.example.deliveryApp.store.dto.response.StoreUpdateResponseDto;
 import com.example.deliveryApp.store.service.StoreService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -38,5 +40,16 @@ public class StoreController {
         StoreGetResponseDto storeFound = storeService.getStoreService(storeId);
         return storeFound;
     }
-
+    // 가게 수정
+    @PatchMapping("/{storeId}")
+    public StoreUpdateResponseDto updateStoreAPI(@PathVariable("storeId") Long storeId,
+                                                @RequestBody StoreUpdateRequestDto storeUpdateRequestDto) {
+        StoreUpdateResponseDto storeUpdateResponseDto = storeService.updateStoreService(storeId, storeUpdateRequestDto);
+        return storeUpdateResponseDto;
+    }
+    // 가게 삭제
+    @DeleteMapping("/{storeId")
+    public void storeClosureAPI(@PathVariable("storeId") Long studentId) {
+        storeService.
+    }
 }
