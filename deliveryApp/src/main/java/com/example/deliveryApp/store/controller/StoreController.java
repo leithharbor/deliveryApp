@@ -7,6 +7,7 @@ import com.example.deliveryApp.store.dto.response.StoreGetResponseDto;
 import com.example.deliveryApp.store.dto.response.StoreUpdateResponseDto;
 import com.example.deliveryApp.store.service.StoreService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,28 +26,28 @@ public class StoreController {
     // 기능
     //가게 생성
     @PostMapping
-    public StoreCreateResponseDto createStoreAPI(@RequestBody StoreCreateRequestDto storeCreateRequestDto) {
-        StoreCreateResponseDto createStore = storeService.createStoreService(storeCreateRequestDto);
-        return createStore;
+    public ResponseEntity<StoreCreateResponseDto> createStoreAPI(@RequestBody StoreCreateRequestDto storeCreateRequestDto) {
+        StoreCreateResponseDto storeCreated = storeService.createStoreService(storeCreateRequestDto);
+        return new ResponseEntity<>(storeCreated, HttpStatus.CREATED);
     }
     // 가게 전체 조회
     @GetMapping
-    public List<StoreGetResponseDto> getAllStoreAPI() {
-        List<StoreGetResponseDto> getAllStores = storeService.getAllStoreService();
-        return getAllStores;
+    public ResponseEntity<List<StoreGetResponseDto>> getAllStoreAPI() {
+        List<StoreGetResponseDto> allStoresGot = storeService.getAllStoreService();
+        return new ResponseEntity<>(allStoresGot, HttpStatus.OK);
     }
     // 가게 단건 조회
     @GetMapping("/{storeId}")
-    public StoreGetResponseDto getStoreAPI(@PathVariable("storeId") Long storeId) {
-        StoreGetResponseDto getStore = storeService.getStoreService(storeId);
-        return getStore;
+    public ResponseEntity<StoreGetResponseDto> getStoreAPI(@PathVariable("storeId") Long storeId) {
+        StoreGetResponseDto StoreGot = storeService.getStoreService(storeId);
+        return new ResponseEntity<>(StoreGot, HttpStatus.OK);
     }
     // 가게 수정
     @PatchMapping("/{storeId}")
-    public StoreUpdateResponseDto updateStoreAPI(@PathVariable("storeId") Long storeId,
+    public ResponseEntity<StoreUpdateResponseDto> updateStoreAPI(@PathVariable("storeId") Long storeId,
                                                 @RequestBody StoreUpdateRequestDto storeUpdateRequestDto) {
-        StoreUpdateResponseDto updateStore = storeService.updateStoreService(storeId, storeUpdateRequestDto);
-        return updateStore;
+        StoreUpdateResponseDto storeUpdated = storeService.updateStoreService(storeId, storeUpdateRequestDto);
+        return ResponseEntity.ok(storeUpdated);
     }
     // 가게 삭제
     @DeleteMapping("/{storeId}")
