@@ -1,14 +1,16 @@
 package com.example.deliveryApp.menu.dto;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 public class MenuRequestDto {
 
 
-    private final String menuName;
-    private final int price;
-    private final int storeId;
+    private String menuName;
+    private int price;
+    private int storeId;
 
     public MenuRequestDto(String menuName, int price, int storeId) {
         this.menuName = menuName;

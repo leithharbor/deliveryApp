@@ -22,6 +22,7 @@ public class Menu {
     @JoinColumn(name = "store_id")
     private Store store;
 
+    //생성자
     public Menu(String menuName, int price, Store store) {
         this.menuName = menuName;
         this.price = price;
@@ -38,7 +39,7 @@ public class Menu {
     }
 
     public void deleteMenu() {
-        this.isActive = false;
+        this.isActive = false; //삭제시 상태 변경
     }
 }
 

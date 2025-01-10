@@ -85,7 +85,7 @@ public class MenuService {
     public MenuResponseDto createMenu(MenuRequestDto menuRequestDto) {
         //가게 조회
         //Store store = storeRepository.findByIdOrElseThrow(menuRequestDto.getStoreId());
-        // Store를 null로 처리
+        // 아직 없어서 Store를 null로 처리
         Menu menu = new Menu(menuRequestDto.getMenuName(), menuRequestDto.getPrice(), null);
 
         // 메뉴 저장
