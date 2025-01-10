@@ -7,5 +7,5 @@ public enum OrderStatus {
 	IN_PROGRESS,    // 조리 중
 	DELIVERING,     // 배달 중
 	DELIVERED,      // 배달 완료
-	CANCELLED       // 주문 취소
+	CANCELLED;    // 주문 취소
 }
