@@ -13,7 +13,7 @@ import lombok.Setter;
 public class User {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long userId;
 
     @Column(length = 10) // 이름은 10자까지 적을 수 있다
     private String userName;
