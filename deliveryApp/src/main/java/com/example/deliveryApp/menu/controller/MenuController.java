@@ -24,7 +24,7 @@ public class MenuController {
     // 메뉴 수정
     @PatchMapping("/{menuId}")
     public ResponseEntity<String> updateMenu(
-            @PathVariable Long menuId,
+            @PathVariable("menuId") Long menuId,
             @RequestBody MenuRequestDto menuRequestDto) {
         menuService.updateMenu(menuId, menuRequestDto);
         return new ResponseEntity<>("메뉴가 수정되었습니다.", HttpStatus.OK);

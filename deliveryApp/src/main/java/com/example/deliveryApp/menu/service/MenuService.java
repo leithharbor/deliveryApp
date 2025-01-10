@@ -66,6 +66,7 @@
 package com.example.deliveryApp.menu.service;
 
 import com.example.deliveryApp.entity.Menu;
+import com.example.deliveryApp.entity.Store;
 import com.example.deliveryApp.menu.dto.MenuRequestDto;
 import com.example.deliveryApp.menu.dto.MenuResponseDto;
 import com.example.deliveryApp.menu.repository.MenuRepository;
@@ -78,9 +79,12 @@ import jakarta.transaction.Transactional;
 public class MenuService {
 
     private final MenuRepository menuRepository;
+    //private final StoreRepository storeRepository;
 
     // 메뉴 생성
     public MenuResponseDto createMenu(MenuRequestDto menuRequestDto) {
+        //가게 조회
+        //Store store = storeRepository.findByIdOrElseThrow(menuRequestDto.getStoreId());
         // Store를 null로 처리
         Menu menu = new Menu(menuRequestDto.getMenuName(), menuRequestDto.getPrice(), null);
 
