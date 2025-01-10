@@ -2,6 +2,7 @@ package com.example.deliveryApp.entity;
 
 
 import jakarta.persistence.*;
+import lombok.Setter;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,7 +17,6 @@ public class Store {
     private Long id; // Long 타입으로 변경
     private String storeName;
     private String openCloseTime;
-//    private String storeDescription;
     private int deliveryMinPrice;
     @Setter
     private boolean isDeletedStore = false;
