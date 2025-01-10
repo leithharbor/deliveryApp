@@ -37,7 +37,8 @@ public class StoreService {
         String openCloseTime = savedStore.getOpenCloseTime();
         int deliveryMinPrice = savedStore.getDeliveryMinPrice();
 
-        StoreCreateResponseDto storeCreate = new StoreCreateResponseDto(storeId, storeName, openCloseTime, deliveryMinPrice);
+        StoreCreateResponseDto storeCreate = new StoreCreateResponseDto("가게가 생성되었습니다.",
+                storeId, storeName, openCloseTime, deliveryMinPrice);
         return storeCreate;
     }
     // 가게 전체 조회
@@ -85,7 +86,7 @@ public class StoreService {
                 storeUpdateRequestDto.getDeliveryMinPrice());
         log.info("수정2222");
         // 수정 내용 StoreUpdateResponseDto에 담아서 반환하는 작업
-        StoreUpdateResponseDto storeUpdateResponseDto = new StoreUpdateResponseDto(
+        StoreUpdateResponseDto storeUpdateResponseDto = new StoreUpdateResponseDto("가게 정보를 수정했습니다.",
                 storeId, store.getStoreName(), store.getOpenCloseTime(), store.getDeliveryMinPrice());
         log.info("333333");
         return storeUpdateResponseDto;

@@ -7,10 +7,12 @@ import lombok.Getter;
 @Getter
 public class StoreCreateResponseDto {
     // 속성
+    private String createMessage;
     private Long id;
     private String storeName;
     private String openCloseTime;
     private int deliveryMinPrice;
+
     // 생성자
 //    public StoreCreateResponseDto (Long id, String storeName, String openCloseTime, int deliveryMinPrice) {
 //        this.id = id;

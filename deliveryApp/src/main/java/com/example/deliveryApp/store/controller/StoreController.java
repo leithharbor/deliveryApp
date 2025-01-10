@@ -2,7 +2,6 @@ package com.example.deliveryApp.store.controller;
 
 import com.example.deliveryApp.store.dto.request.StoreCreateRequestDto;
 import com.example.deliveryApp.store.dto.request.StoreUpdateRequestDto;
-import com.example.deliveryApp.store.dto.response.StoreClosureResponseDto;
 import com.example.deliveryApp.store.dto.response.StoreCreateResponseDto;
 import com.example.deliveryApp.store.dto.response.StoreGetResponseDto;
 import com.example.deliveryApp.store.dto.response.StoreUpdateResponseDto;
@@ -33,21 +32,21 @@ public class StoreController {
     // 가게 전체 조회
     @GetMapping
     public List<StoreGetResponseDto> getAllStoreAPI() {
-        List<StoreGetResponseDto> allStoresFound = storeService.getAllStoreService();
-        return allStoresFound;
+        List<StoreGetResponseDto> getAllStores = storeService.getAllStoreService();
+        return getAllStores;
     }
     // 가게 단건 조회
     @GetMapping("/{storeId}")
     public StoreGetResponseDto getStoreAPI(@PathVariable("storeId") Long storeId) {
-        StoreGetResponseDto storeFound = storeService.getStoreService(storeId);
-        return storeFound;
+        StoreGetResponseDto getStore = storeService.getStoreService(storeId);
+        return getStore;
     }
     // 가게 수정
     @PatchMapping("/{storeId}")
     public StoreUpdateResponseDto updateStoreAPI(@PathVariable("storeId") Long storeId,
                                                 @RequestBody StoreUpdateRequestDto storeUpdateRequestDto) {
-        StoreUpdateResponseDto storeUpdateResponseDto = storeService.updateStoreService(storeId, storeUpdateRequestDto);
-        return storeUpdateResponseDto;
+        StoreUpdateResponseDto updateStore = storeService.updateStoreService(storeId, storeUpdateRequestDto);
+        return updateStore;
     }
     // 가게 삭제
     @DeleteMapping("/{storeId}")
