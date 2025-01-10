@@ -80,6 +80,14 @@ public class OrderService {
 		Order order = orderRepository.findById(orderId)
 			.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "존재하지 않는 주문번호입니다."));
 
+		//현재 주문상태와 변경하려는 주문상태가 같은지 확인
+		if(order.getOrderStatus() == requestDto.getOrderStatus()) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"변경하려는 주문상태가 현재와 동일합니다.");
+		}
+
+		//주문 상태 변경 확인
+		order.getOrderStatus().orderStatusManagement(requestDto.getOrderStatus());
+
 		//상태 변경
 		order.changeOrderStatus(requestDto.getOrderStatus());
 
