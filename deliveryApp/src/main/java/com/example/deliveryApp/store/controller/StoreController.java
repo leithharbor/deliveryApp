@@ -2,11 +2,13 @@ package com.example.deliveryApp.store.controller;
 
 import com.example.deliveryApp.store.dto.request.StoreCreateRequestDto;
 import com.example.deliveryApp.store.dto.request.StoreUpdateRequestDto;
+import com.example.deliveryApp.store.dto.response.StoreClosureResponseDto;
 import com.example.deliveryApp.store.dto.response.StoreCreateResponseDto;
 import com.example.deliveryApp.store.dto.response.StoreGetResponseDto;
 import com.example.deliveryApp.store.dto.response.StoreUpdateResponseDto;
 import com.example.deliveryApp.store.service.StoreService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -48,7 +50,9 @@ public class StoreController {
         return storeUpdateResponseDto;
     }
     // 가게 삭제
-    @DeleteMapping("/{storeId")
-    public void storeClosureAPI(@PathVariable("storeId") Long studentId) {
+    @DeleteMapping("/{storeId}")
+    public ResponseEntity<String> storeClosureAPI(@PathVariable("storeId") Long storeId) {
+        storeService.storeClosureService(storeId);
+        return ResponseEntity.ok("폐업처리가 완료됐습니다.");
     }
 }

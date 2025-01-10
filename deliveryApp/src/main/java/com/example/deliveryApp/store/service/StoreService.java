@@ -77,18 +77,27 @@ public class StoreService {
         // 1. 수정할 가게 찾기/ 없으면 찾을 수 없다고 안내 메시지(예외처리)
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new RuntimeException("가게를 찾을 수 없습니다."));
-        log.info("111111");
+        log.info("수정할 가게 찾기");
         // 수정할 내용 store 엔티티에 생성자(조립설명서)의 조건하에 수정 가능
         store.storeUpdateInfo(
                 storeUpdateRequestDto.getStoreName(),
                 storeUpdateRequestDto.getOpenCloseTime(),
                 storeUpdateRequestDto.getDeliveryMinPrice());
-        log.info("222222");
+        log.info("수정2222");
         // 수정 내용 StoreUpdateResponseDto에 담아서 반환하는 작업
         StoreUpdateResponseDto storeUpdateResponseDto = new StoreUpdateResponseDto(
                 storeId, store.getStoreName(), store.getOpenCloseTime(), store.getDeliveryMinPrice());
         log.info("333333");
         return storeUpdateResponseDto;
     }
-
+    // 가게 삭제
+    public void storeClosureService(Long storeId) {
+        log.info("가게 정보를 삭제합니다.");
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new RuntimeException("가게를 찾을 수 없습니다."));
+        log.info("삭제할 가게 찾기");
+        store.setDeletedStore(true);
+        log.info("가게 상태 변경");
+        storeRepository.save(store);
+    }
 }

@@ -3,7 +3,7 @@ package com.example.deliveryApp.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-
+import lombok.Setter;
 
 
 @Getter
@@ -18,7 +18,8 @@ public class Store {
     private String openCloseTime;
 //    private String storeDescription;
     private int deliveryMinPrice;
-    private boolean isDeletedStore;
+    @Setter
+    private boolean isDeletedStore = false;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -32,7 +33,6 @@ public class Store {
         this.storeName = storeName;
         this.openCloseTime = openCloseTime;
         this.deliveryMinPrice = deliveryMinPrice;
-        this.isDeletedStore = false;
     }
     // 수정 기능 - 수정할때 지켜야할 최소 조건 정해주기(어플 정책 설정)
     public void storeUpdateInfo (String storeName, String openCloseTime, int deliveryMinPrice) {
