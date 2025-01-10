@@ -10,7 +10,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.example.deliveryApp.entity.Menu;
 import com.example.deliveryApp.entity.Order;
-import com.example.deliveryApp.menu.MenuRepository;
+import com.example.deliveryApp.menu.repository.MenuRepository;
 import com.example.deliveryApp.order.OrderStatus;
 import com.example.deliveryApp.order.dto.OrderCancleResponseDto;
 import com.example.deliveryApp.order.dto.OrderCreateRequestDto;
@@ -49,7 +49,7 @@ public class OrderService {
 
 		//오픈-마감시간 오류 403 Forbidden
 		//HH:mm - HH:mm 형태에서 시간을 분리
-		String[] times = menu.getStore().getOpenClose().split("\\s*-\\s*");
+		String[] times = menu.getStore().getOpenCloseTime().split("\\s*-\\s*");
 
 		//분리한 String 타입 시간을 LocalDateTime 타입의 시간으로 바꿔주기
 		LocalTime openTime = LocalTime.parse(times[0]);
@@ -61,7 +61,7 @@ public class OrderService {
 		//오픈시간 이전이거나, 클로즈시간 이후일 때 실행
 		if (now.isBefore(openTime) || now.isAfter(closeTime)) {
 			throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-				"영업시간을 확인해주세요. 영업시간 : " + menu.getStore().getOpenClose());
+				"영업시간을 확인해주세요. 영업시간 : " + menu.getStore().getOpenCloseTime());
 		}
 
 		//주문 생성
