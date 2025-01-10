@@ -7,10 +7,12 @@ import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
 import com.example.deliveryApp.entity.Menu;
 import com.example.deliveryApp.entity.Order;
 import com.example.deliveryApp.menu.MenuRepository;
 import com.example.deliveryApp.order.OrderStatus;
+import com.example.deliveryApp.order.dto.OrderCancleResponseDto;
 import com.example.deliveryApp.order.dto.OrderCreateRequestDto;
 import com.example.deliveryApp.order.dto.OrderCreateResponseDto;
 import com.example.deliveryApp.order.dto.OrderDetailResponseDto;
@@ -110,6 +112,19 @@ public class OrderService {
 			.collect(Collectors.toList());
 
 		return responseDtoList;
+	}
+
+	//주문 취소
+	public OrderCancleResponseDto orderCancel(Long orderId) {
+
+		Order foundOrder = orderRepository.findById(orderId)
+			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당하는 id의 주문번호가 없습니다."));
+
+		foundOrder.changeOrderStatus(OrderStatus.CANCELLED);
+
+		orderRepository.save(foundOrder);
+
+		return new OrderCancleResponseDto("요청이 정상적으로 처리되었습니다.");
 	}
 
 }
