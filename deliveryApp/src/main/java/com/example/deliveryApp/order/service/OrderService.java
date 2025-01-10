@@ -1,17 +1,17 @@
 package com.example.deliveryApp.order.service;
 
 import java.time.LocalTime;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import com.example.deliveryApp.entity.Menu;
 import com.example.deliveryApp.entity.Order;
 import com.example.deliveryApp.menu.MenuRepository;
+import com.example.deliveryApp.order.OrderStatus;
 import com.example.deliveryApp.order.dto.OrderCreateRequestDto;
 import com.example.deliveryApp.order.dto.OrderCreateResponseDto;
+import com.example.deliveryApp.order.dto.OrderStatusChangeRequestDto;
+import com.example.deliveryApp.order.dto.OrderStatusChangeResponseDto;
 import com.example.deliveryApp.order.repository.OrderRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -65,6 +65,31 @@ public class OrderService {
 		orderRepository.save(order);
 
 		return new OrderCreateResponseDto("요청이 정상적으로 처리되었습니다.", order.getTotalPaymentPrice(),order.getOrderedAt());
+	}
+
+	//주문 상태 변경 API
+	public OrderStatusChangeResponseDto changeOrderStatus(Long orderId, OrderStatusChangeRequestDto requestDto) {
+
+		//id로 order 조회
+		Order order = orderRepository.findById(orderId)
+			.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "존재하지 않는 주문번호입니다."));
+
+		//상태 변경
+		order.changeOrderStatus(requestDto.getOrderStatus());
+
+		// 변경 후 DB에 저장
+		orderRepository.save(order);
+
+		//주문상태를 REJECTED로 변경하는 경우 reason 포함 응답 반환
+		if (requestDto.getOrderStatus() == OrderStatus.REJECTED) {
+			if (requestDto.getReason() == null) {
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "주문 거절 시 거절 사유는 필수 입력값 입니다");
+			}
+			return new OrderStatusChangeResponseDto(requestDto.getReason());
+		}
+
+		// REJECTED를 제외한 다른 상태변경 응답
+		return new OrderStatusChangeResponseDto(order.getOrderStatus());
 	}
 
 }

@@ -54,7 +54,13 @@ public class Order {
         this.totalPaymentPrice = totalPaymentPrice;
         this.orderStatus = OrderStatus.PENDING; //대기 중을 기본값으로 설정
     }
-    
+
+    //상태 변경 메서드
+    public void changeOrderStatus (OrderStatus orderStatus) {
+        if(orderStatus == null) {
+            throw new IllegalArgumentException("유효하지 않은 주문 상태입니다.");
+        }
+        this.orderStatus = orderStatus;
     }
 
 }
