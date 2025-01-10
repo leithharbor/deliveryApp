@@ -2,7 +2,6 @@ package com.example.deliveryApp.user.controller;
 
 import com.example.deliveryApp.entity.User;
 import com.example.deliveryApp.session.SessionConst;
-import com.example.deliveryApp.user.dto.GetUserRequsetDto;
 import com.example.deliveryApp.user.dto.SignUpRequestDto;
 import com.example.deliveryApp.user.dto.UserLoginRequestDto;
 import com.example.deliveryApp.user.service.UserService;
@@ -63,16 +62,4 @@ public class UserController {
         }
         return ResponseEntity.ok("성공적으로 로그아웃 했습니다.");
     }
-
-
-//    //회원 정보 아이디 값 조회
-//    @GetMapping("/{userId}")
-//    public ResponseEntity<String> getUserById(
-//            @PathVariable(name = "userId") Long userId,
-//            @RequestBody GetUserRequsetDto getUserRequsetDto) {
-//
-//
-//
-//    }
-
 }
