@@ -1,6 +1,9 @@
 package com.example.deliveryApp.order.service;
 
 import java.time.LocalTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -10,6 +13,7 @@ import com.example.deliveryApp.menu.MenuRepository;
 import com.example.deliveryApp.order.OrderStatus;
 import com.example.deliveryApp.order.dto.OrderCreateRequestDto;
 import com.example.deliveryApp.order.dto.OrderCreateResponseDto;
+import com.example.deliveryApp.order.dto.OrderDetailResponseDto;
 import com.example.deliveryApp.order.dto.OrderStatusChangeRequestDto;
 import com.example.deliveryApp.order.dto.OrderStatusChangeResponseDto;
 import com.example.deliveryApp.order.repository.OrderRepository;
@@ -90,6 +94,22 @@ public class OrderService {
 
 		// REJECTED를 제외한 다른 상태변경 응답
 		return new OrderStatusChangeResponseDto(order.getOrderStatus());
+	}
+
+	//주문 내역 조회 API
+	public List<OrderDetailResponseDto> lookupOrders() {
+
+		List<Order> orderList = orderRepository.findAll();
+
+		List<OrderDetailResponseDto> responseDtoList = orderList.stream().map(order -> new OrderDetailResponseDto(
+				order.getId(),
+				order.getMenu().getMenuName(),
+				order.getOrderStatus(),
+				order.getTotalPaymentPrice(),
+				order.getOrderedAt()))
+			.collect(Collectors.toList());
+
+		return responseDtoList;
 	}
 
 }
