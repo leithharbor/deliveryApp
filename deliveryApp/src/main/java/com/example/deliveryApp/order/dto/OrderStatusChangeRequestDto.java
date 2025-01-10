@@ -12,6 +12,8 @@ public class OrderStatusChangeRequestDto {
 	private OrderStatus orderStatus;
 	private String reason;
 
+	public OrderStatusChangeRequestDto() {}
+
 	public OrderStatusChangeRequestDto (OrderStatus orderStatus) {
 		this.orderStatus = orderStatus;
 	}

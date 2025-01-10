@@ -12,6 +12,8 @@ public class OrderStatusChangeResponseDto {
 	private OrderStatus orderStatus;
 	private String reason;
 
+	public OrderStatusChangeResponseDto () {}
+
 	public OrderStatusChangeResponseDto (String reason) {
 		this.message = "요청이 정상적으로 처리되었습니다.";
 		this.reason = reason;
