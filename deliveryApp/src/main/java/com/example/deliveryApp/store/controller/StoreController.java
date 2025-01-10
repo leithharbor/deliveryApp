@@ -50,6 +50,5 @@ public class StoreController {
     // 가게 삭제
     @DeleteMapping("/{storeId")
     public void storeClosureAPI(@PathVariable("storeId") Long studentId) {
-        storeService.
     }
 }
