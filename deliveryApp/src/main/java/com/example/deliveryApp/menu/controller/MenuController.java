@@ -1,5 +1,6 @@
 package com.example.deliveryApp.menu.controller;
 
+import com.example.deliveryApp.entity.User;
 import com.example.deliveryApp.menu.dto.MenuRequestDto;
 import com.example.deliveryApp.menu.service.MenuService;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ public class MenuController {
     // 메뉴 생성
     @PostMapping
     public ResponseEntity<String> createMenu(@RequestBody MenuRequestDto menuRequestDto) {
+
         menuService.createMenu(menuRequestDto);
         return new ResponseEntity<>("메뉴가 생성되었습니다.", HttpStatus.CREATED);
     }
@@ -26,6 +28,7 @@ public class MenuController {
     public ResponseEntity<String> updateMenu(
             @PathVariable("menuId") Long menuId,
             @RequestBody MenuRequestDto menuRequestDto) {
+
         menuService.updateMenu(menuId, menuRequestDto);
         return new ResponseEntity<>("메뉴가 수정되었습니다.", HttpStatus.OK);
     }
@@ -33,6 +36,7 @@ public class MenuController {
     // 메뉴 삭제
     @DeleteMapping("/{menuId}")
     public ResponseEntity<String> deleteMenu(@PathVariable("menuId") Long menuId) {
+
         menuService.deleteMenu(menuId);
         return new ResponseEntity<>("메뉴가 삭제되었습니다.", HttpStatus.OK);
     }
