@@ -1,9 +1,13 @@
 package com.example.deliveryApp.entity;
 
 import jakarta.persistence.*;
+        import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+@NoArgsConstructor
+@Getter
 @Entity
 @Table(name = "review")
 public class Review {
@@ -26,4 +30,11 @@ public class Review {
     @ManyToOne
     @JoinColumn(name = "store_id")
     private Store store;
+
+    public Review(Order order, int rating, String contents) {
+        this.order = order;
+        this.rating = rating;
+        this.contents = contents;
+    }
 }
+
