@@ -4,6 +4,10 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.example.deliveryApp.order.exception.BusinessHoursDiscrepancyException;
+import com.example.deliveryApp.order.exception.MenuExistenceCheckException;
+import com.example.deliveryApp.order.exception.RejectReasonCheckException;
+import com.example.deliveryApp.order.exception.TotalOrderAmountUnfulfilledException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -34,17 +38,15 @@ public class OrderService {
 
 		//menu가 존재하는지 확인
 		Menu menu = menuRepository.findById(requestDto.getMenuId())
-			.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
-
+			.orElseThrow(() -> new MenuExistenceCheckException());
 		//store에 있는 menu가 맞는지 확인
 		if (!menu.getStore().getId().equals(requestDto.getStoreId())) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "가게에서 해당 메뉴를 찾을 수 없습니다.");
+			throw new MenuExistenceCheckException();
 		}
 
 		//최소 주문 금액 불충족 403 Forbidden
 		if (menu.getPrice() < menu.getStore().getDeliveryMinPrice()) {
-			throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-				"최소 주문 금액을 맞춰주세요. 최소 주문 금액 : " + menu.getStore().getDeliveryMinPrice());
+			throw new TotalOrderAmountUnfulfilledException();
 		}
 
 		//오픈-마감시간 오류 403 Forbidden
@@ -60,8 +62,7 @@ public class OrderService {
 
 		//오픈시간 이전이거나, 클로즈시간 이후일 때 실행
 		if (now.isBefore(openTime) || now.isAfter(closeTime)) {
-			throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-				"영업시간을 확인해주세요. 영업시간 : " + menu.getStore().getOpenCloseTime());
+			throw new BusinessHoursDiscrepancyException();
 		}
 
 		//주문 생성
@@ -78,7 +79,7 @@ public class OrderService {
 
 		//id로 order 조회
 		Order order = orderRepository.findById(orderId)
-			.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "존재하지 않는 주문번호입니다."));
+			.orElseThrow(() -> new MenuExistenceCheckException());
 
 		//현재 주문상태와 변경하려는 주문상태가 같은지 확인
 		if(order.getOrderStatus() == requestDto.getOrderStatus()) {
@@ -86,6 +87,7 @@ public class OrderService {
 		}
 
 		//주문 상태 변경 확인
+
 		order.getOrderStatus().orderStatusManagement(requestDto.getOrderStatus());
 
 		//상태 변경
@@ -97,7 +99,7 @@ public class OrderService {
 		//주문상태를 REJECTED로 변경하는 경우 reason 포함 응답 반환
 		if (requestDto.getOrderStatus() == OrderStatus.REJECTED) {
 			if (requestDto.getReason() == null) {
-				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "주문 거절 시 거절 사유는 필수 입력값 입니다");
+				throw new RejectReasonCheckException();
 			}
 			return new OrderStatusChangeResponseDto(requestDto.getReason());
 		}
@@ -126,7 +128,7 @@ public class OrderService {
 	public OrderCancleResponseDto orderCancel(Long orderId) {
 
 		Order foundOrder = orderRepository.findById(orderId)
-			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당하는 id의 주문번호가 없습니다."));
+			.orElseThrow(() -> new MenuExistenceCheckException());
 
 		foundOrder.changeOrderStatus(OrderStatus.CANCELLED);
 
