@@ -31,8 +31,9 @@ public class MenuController {
         }
 
         menuService.createMenu(userId, menuRequestDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body("메뉴가 생성되었습니다.");
+        return ResponseEntity.ok("메뉴가 생성되었습니다.");
     }
+
 
     // 메뉴 수정
     @PatchMapping("/{menuId}")
@@ -48,7 +49,7 @@ public class MenuController {
         }
 
         menuService.updateMenu(userId, menuId, menuRequestDto);
-        return new ResponseEntity<>("메뉴가 수정되었습니다.", HttpStatus.OK);
+        return ResponseEntity.ok("메뉴가 수정되었습니다.");
     }
 
 
@@ -63,7 +64,7 @@ public class MenuController {
         }
 
         menuService.deleteMenu(userId, menuId);
-        return new ResponseEntity<>("메뉴가 삭제되었습니다.", HttpStatus.OK);
+        return ResponseEntity.ok("메뉴가 삭제되었습니다.");
     }
 }
 
