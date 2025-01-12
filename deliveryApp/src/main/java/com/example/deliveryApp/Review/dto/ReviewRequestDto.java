@@ -12,5 +12,7 @@ public class ReviewRequestDto {
 
     private String contents;
     private Long orderId;
+
+    private Long userId;
 }
 
