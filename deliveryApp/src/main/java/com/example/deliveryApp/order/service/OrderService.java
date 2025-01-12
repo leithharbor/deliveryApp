@@ -3,15 +3,10 @@ package com.example.deliveryApp.order.service;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import com.example.deliveryApp.order.exception.BusinessHoursDiscrepancyException;
-import com.example.deliveryApp.order.exception.MenuExistenceCheckException;
-import com.example.deliveryApp.order.exception.RejectReasonCheckException;
-import com.example.deliveryApp.order.exception.TotalOrderAmountUnfulfilledException;
+import com.example.deliveryApp.order.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
 import com.example.deliveryApp.entity.Menu;
 import com.example.deliveryApp.entity.Order;
 import com.example.deliveryApp.menu.repository.MenuRepository;
@@ -39,6 +34,7 @@ public class OrderService {
 		//menu가 존재하는지 확인
 		Menu menu = menuRepository.findById(requestDto.getMenuId())
 			.orElseThrow(() -> new MenuExistenceCheckException());
+
 		//store에 있는 menu가 맞는지 확인
 		if (!menu.getStore().getId().equals(requestDto.getStoreId())) {
 			throw new MenuExistenceCheckException();
@@ -127,14 +123,20 @@ public class OrderService {
 	//주문 취소
 	public OrderCancleResponseDto orderCancel(Long orderId) {
 
+		// 주문 id 확인
 		Order foundOrder = orderRepository.findById(orderId)
 			.orElseThrow(() -> new MenuExistenceCheckException());
+
+		// 이미 취소처리 된 주문 확인
+		if(foundOrder.getOrderStatus() == OrderStatus.CANCELLED) {
+			throw new OrderAlreadCancledException();
+		}
 
 		foundOrder.changeOrderStatus(OrderStatus.CANCELLED);
 
 		orderRepository.save(foundOrder);
 
-		return new OrderCancleResponseDto("요청이 정상적으로 처리되었습니다.");
+		return new OrderCancleResponseDto("주문이 취소되었습니다.");
 	}
 
 }
