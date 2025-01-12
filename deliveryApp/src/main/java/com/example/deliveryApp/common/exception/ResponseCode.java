@@ -20,7 +20,8 @@ public enum ResponseCode {
     BUSINESS_HOURS_INCONSISTENCY(HttpStatus.FORBIDDEN,"지금은 영업시간이 아닙니다."),
     ORDERSTATUS_SAME_CURRENT(HttpStatus.BAD_REQUEST,"변경하려는 주문상태가 현재와 같습니다."),
     ORDERSTATUS_CHANGE_IMPOSSIBLE(HttpStatus.BAD_REQUEST,"해당 주문상태로 변경할 수 없습니다."),
-    REASON_NULL_CHECK(HttpStatus.BAD_REQUEST,"주문 거절 시, 거절 사유는 필수 입력해야 합니다.");
+    REASON_NULL_CHECK(HttpStatus.BAD_REQUEST,"주문 거절 시, 거절 사유는 필수 입력해야 합니다."),
+    ORDER_ALREADY_CANCLE(HttpStatus.BAD_REQUEST,"이미 취소 처리 된 주문입니다.");
 
     private final HttpStatus status;
     private final String message;
