@@ -42,18 +42,13 @@ public class Order {
     private User user;
 
 
-    // public Order (Menu menu, User user, int totalPaymentPrice) {
-    //     this.menu = menu;
-    //     this.user = user;
-    //     this.totalPaymentPrice = totalPaymentPrice;
-    //     this.orderStatus = OrderStatus.PENDING; //대기 중을 기본값으로 설정
-    // }
+     public Order (Menu menu, User user, int totalPaymentPrice) {
+         this.menu = menu;
+         this.user = user;
+         this.totalPaymentPrice = totalPaymentPrice;
+         this.orderStatus = OrderStatus.PENDING; //대기 중을 기본값으로 설정
+     }
 
-    public Order (Menu menu, int totalPaymentPrice) {
-        this.menu = menu;
-        this.totalPaymentPrice = totalPaymentPrice;
-        this.orderStatus = OrderStatus.PENDING; //대기 중을 기본값으로 설정
-    }
 
     //상태 변경 메서드
     public void changeOrderStatus (OrderStatus orderStatus) {
