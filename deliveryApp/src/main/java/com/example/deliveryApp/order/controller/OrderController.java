@@ -43,9 +43,9 @@ public class OrderController {
 
 	//주문 상태 변경
 	@PatchMapping("/{orderId}")
-	public ResponseEntity<OrderStatusChangeResponseDto> changeOrderStatus (@PathVariable(name = "orderId") Long orderId, @Valid @RequestBody OrderStatusChangeRequestDto requestDto) {
+	public ResponseEntity<OrderStatusChangeResponseDto> changeOrderStatus (@PathVariable(name = "orderId") Long orderId, @Valid @RequestBody OrderStatusChangeRequestDto requestDto, HttpSession session) {
 
-		OrderStatusChangeResponseDto orderStatusChangeResponseDto = orderService.changeOrderStatus(orderId, requestDto);
+		OrderStatusChangeResponseDto orderStatusChangeResponseDto = orderService.changeOrderStatus(orderId, requestDto, session);
 
 		return new ResponseEntity<>(orderStatusChangeResponseDto, HttpStatus.OK);
 	}

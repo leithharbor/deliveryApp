@@ -94,7 +94,19 @@ public class OrderService {
 	}
 
 	//주문 상태 변경 API
-	public OrderStatusChangeResponseDto changeOrderStatus(Long orderId, OrderStatusChangeRequestDto requestDto) {
+	public OrderStatusChangeResponseDto changeOrderStatus(Long orderId, OrderStatusChangeRequestDto requestDto, HttpSession session) {
+
+		//세션에서 userId 가져오기
+		Long userId = (Long) session.getAttribute("loginUserId");
+
+		//user Id로 user 조회
+		User sessionUser = userRepository.findById(userId)
+				.orElseThrow(() -> new UserExistenceCheckException());
+
+		//권한 존재 확인(사장님)
+		if (sessionUser.getUserType() == UserType.USER) {
+			throw new PrivilegeExistenceVerificationException();
+		}
 
 		//id로 order 조회
 		Order order = orderRepository.findById(orderId)
@@ -106,7 +118,6 @@ public class OrderService {
 		}
 
 		//주문 상태 변경 확인
-
 		order.getOrderStatus().orderStatusManagement(requestDto.getOrderStatus());
 
 		//상태 변경
