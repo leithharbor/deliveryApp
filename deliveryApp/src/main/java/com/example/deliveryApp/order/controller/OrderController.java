@@ -61,9 +61,9 @@ public class OrderController {
 
 	//주문 취소
 	@DeleteMapping("/{orderId}")
-	public ResponseEntity<OrderCancleResponseDto> orderCancelAPI(@PathVariable(name = "orderId") Long orderId) {
+	public ResponseEntity<OrderCancleResponseDto> orderCancelAPI(@PathVariable(name = "orderId") Long orderId, HttpSession session) {
 
-		OrderCancleResponseDto responseDto = orderService.orderCancel(orderId);
+		OrderCancleResponseDto responseDto = orderService.orderCancel(orderId, session);
 
 		return new ResponseEntity<>(responseDto, HttpStatus.OK);
 	}

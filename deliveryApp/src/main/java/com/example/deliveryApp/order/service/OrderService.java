@@ -155,7 +155,19 @@ public class OrderService {
 	}
 
 	//주문 취소
-	public OrderCancleResponseDto orderCancel(Long orderId) {
+	public OrderCancleResponseDto orderCancel(Long orderId, HttpSession session) {
+
+		//세션에서 userId 가져오기
+		Long userId = (Long) session.getAttribute("loginUserId");
+
+		//user Id로 user 조회
+		User sessionUser = userRepository.findById(userId)
+				.orElseThrow(() -> new UserExistenceCheckException());
+
+		//권한 존재 확인(사장님)
+		if (sessionUser.getUserType() == UserType.USER) {
+			throw new PrivilegeExistenceVerificationException();
+		}
 
 		// 주문 id 확인
 		Order foundOrder = orderRepository.findById(orderId)
