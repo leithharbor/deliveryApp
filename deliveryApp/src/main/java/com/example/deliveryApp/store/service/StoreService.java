@@ -92,7 +92,7 @@ public class StoreService {
     // 가게 수정
     // @Transaction 어노테이션으로 영속성 컨텍스트 사용./save(); 안써도 자동으로 수정사항 저장시켜주는 애.
     @Transactional
-    public StoreUpdateResponseDto updateStoreService(Long storeId, StoreUpdateRequestDto storeUpdateRequestDto) {
+    public StoreUpdateResponseDto updateStoreService(Long userId, Long storeId, StoreUpdateRequestDto storeUpdateRequestDto) {
         log.info("가게 정보를 수정합니다.");
         // 1. 수정할 가게 찾기/ 없으면 찾을 수 없다고 안내 메시지(예외처리)
         Store store = storeRepository.findById(storeId)
@@ -111,7 +111,7 @@ public class StoreService {
         return storeUpdateResponseDto;
     }
     // 가게 삭제
-    public void storeClosureService(Long storeId) {
+    public void storeClosureService(Long userId, Long storeId) {
         log.info("폐업을 시작합니다.");
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new RuntimeException("가게를 찾을 수 없습니다."));

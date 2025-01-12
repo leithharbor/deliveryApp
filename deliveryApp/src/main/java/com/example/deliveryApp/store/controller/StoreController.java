@@ -32,7 +32,8 @@ public class StoreController {
     //가게 생성
     @PostMapping
     public ResponseEntity<StoreCreateResponseDto> createStoreAPI(HttpServletRequest request, @RequestBody StoreCreateRequestDto storeCreateRequestDto) {
-        // 서블릿 리퀘스트로 세션값받아오기/ 객체화
+        // 서블릿 리퀘스트로 세션값 받아오기/ 객체화
+        // 사장님 아이디로 가게 생성 동일 아이디 연관짓기, 가게 주인만들기
         HttpSession session = request.getSession();
         Long userId = (Long) session.getAttribute(SessionConst.LOGIN_USER_ID);
         if (userId == null) {
@@ -55,15 +56,29 @@ public class StoreController {
     }
     // 가게 수정
     @PatchMapping("/{storeId}")
-    public ResponseEntity<StoreUpdateResponseDto> updateStoreAPI(@PathVariable("storeId") Long storeId,
+    public ResponseEntity<StoreUpdateResponseDto> updateStoreAPI(HttpServletRequest request, @PathVariable("storeId") Long storeId,
                                                 @RequestBody StoreUpdateRequestDto storeUpdateRequestDto) {
-        StoreUpdateResponseDto storeUpdated = storeService.updateStoreService(storeId, storeUpdateRequestDto);
+        // 서블릿 리퀘스트로 세션값받아오기/ 객체화
+        // 가게 주인만 수정 가능
+        HttpSession session = request.getSession();
+        Long userId = (Long) session.getAttribute(SessionConst.LOGIN_USER_ID);
+        if (userId == null) {
+            throw new RuntimeException("사용자 정보를 확인할 수 없습니다.");
+        }
+        StoreUpdateResponseDto storeUpdated = storeService.updateStoreService(userId, storeId, storeUpdateRequestDto);
         return ResponseEntity.ok(storeUpdated);
     }
     // 가게 삭제
     @DeleteMapping("/{storeId}")
-    public ResponseEntity<String> storeClosureAPI(@PathVariable("storeId") Long storeId) {
-        storeService.storeClosureService(storeId);
+    public ResponseEntity<String> storeClosureAPI(HttpServletRequest request, @PathVariable("storeId") Long storeId) {
+        // 서블릿 리퀘스트로 세션값받아오기/ 객체화
+        // 가게 주인만 가게 상태변경 가능
+        HttpSession session = request.getSession();
+        Long userId = (Long) session.getAttribute(SessionConst.LOGIN_USER_ID);
+        if (userId == null) {
+            throw new RuntimeException("사용자 정보를 확인할 수 없습니다.");
+        }
+        storeService.storeClosureService(userId, storeId);
         return ResponseEntity.ok("폐업처리가 완료됐습니다.");
     }
 }
