@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.example.deliveryApp.order.dto.OrderCancleResponseDto;
 import com.example.deliveryApp.order.dto.OrderCreateRequestDto;
 import com.example.deliveryApp.order.dto.OrderCreateResponseDto;
@@ -52,9 +51,9 @@ public class OrderController {
 
 	//주문 내역(조회)
 	@GetMapping
-	public ResponseEntity<List<OrderDetailResponseDto>> lookupOrdersAPI () {
+	public ResponseEntity<List<OrderDetailResponseDto>> lookupOrdersAPI (HttpSession session) {
 
-		List<OrderDetailResponseDto> responseDtoList = orderService.lookupOrders();
+		List<OrderDetailResponseDto> responseDtoList = orderService.lookupOrders(session);
 
 		return new ResponseEntity<>(responseDtoList, HttpStatus.OK);
 	}

@@ -34,6 +34,9 @@ public class OrderService {
 	private final MenuRepository menuRepository;
 	private final UserRepository userRepository;
 
+	public void logging(Long orderId, Long storeId) {
+	}
+
 	//주문 생성 API
 	public OrderCreateResponseDto createOrder(OrderCreateRequestDto requestDto, HttpSession session) {
 
@@ -90,7 +93,7 @@ public class OrderService {
 		//생성 한 주문 저장
 		orderRepository.save(order);
 
-		return new OrderCreateResponseDto("주문이 완료되었습니다.", order.getTotalPaymentPrice(),order.getOrderedAt());
+		return new OrderCreateResponseDto("주문이 완료되었습니다.",menu.getStore().getStoreName(), order.getId(), order.getTotalPaymentPrice(),order.getOrderedAt());
 	}
 
 	//주문 상태 변경 API
@@ -126,6 +129,10 @@ public class OrderService {
 		// 변경 후 DB에 저장
 		orderRepository.save(order);
 
+		Long storeId = order.getMenu().getStore().getId();
+
+		logging(orderId, storeId);
+
 		//주문상태를 REJECTED로 변경하는 경우 reason 포함 응답 반환
 		if (requestDto.getOrderStatus() == OrderStatus.REJECTED) {
 			if (requestDto.getReason() == null) {
@@ -139,9 +146,16 @@ public class OrderService {
 	}
 
 	//주문 내역 조회 API
-	public List<OrderDetailResponseDto> lookupOrders() {
+	public List<OrderDetailResponseDto> lookupOrders(HttpSession session) {
 
-		List<Order> orderList = orderRepository.findAll();
+		//세션에서 userId 가져오기
+		Long userId = (Long) session.getAttribute("loginUserId");
+
+		//user Id로 user 조회
+		User sessionUser = userRepository.findById(userId)
+				.orElseThrow(() -> new UserExistenceCheckException());
+
+		List<Order> orderList = orderRepository.findAllByUser_UserId(userId);
 
 		List<OrderDetailResponseDto> responseDtoList = orderList.stream().map(order -> new OrderDetailResponseDto(
 				order.getId(),
@@ -164,8 +178,8 @@ public class OrderService {
 		User sessionUser = userRepository.findById(userId)
 				.orElseThrow(() -> new UserExistenceCheckException());
 
-		//권한 존재 확인(사장님)
-		if (sessionUser.getUserType() == UserType.USER) {
+		//권한 존재 확인(유저)
+		if (sessionUser.getUserType() == UserType.OWNER) {
 			throw new PrivilegeExistenceVerificationException();
 		}
 
@@ -181,6 +195,10 @@ public class OrderService {
 		foundOrder.changeOrderStatus(OrderStatus.CANCELLED);
 
 		orderRepository.save(foundOrder);
+
+		Long storeId = foundOrder.getMenu().getStore().getId();
+
+		logging(orderId, storeId);
 
 		return new OrderCancleResponseDto("주문이 취소되었습니다.");
 	}
