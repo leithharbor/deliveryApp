@@ -2,13 +2,19 @@ package com.example.deliveryApp.store.service;
 
 import com.example.deliveryApp.entity.Store;
 
+import com.example.deliveryApp.entity.User;
+import com.example.deliveryApp.entity.UserType;
+import com.example.deliveryApp.menu.repository.MenuRepository;
 import com.example.deliveryApp.store.dto.request.StoreCreateRequestDto;
 import com.example.deliveryApp.store.dto.request.StoreUpdateRequestDto;
+import com.example.deliveryApp.store.dto.response.AllStoreGetResponseDto;
 import com.example.deliveryApp.store.dto.response.StoreCreateResponseDto;
 import com.example.deliveryApp.store.dto.response.StoreGetResponseDto;
 import com.example.deliveryApp.store.dto.response.StoreUpdateResponseDto;
 import com.example.deliveryApp.store.repository.StoreRepository;
+import com.example.deliveryApp.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -16,45 +22,61 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
+@RequiredArgsConstructor
 @Service
 public class StoreService {
     // 속성
     private final StoreRepository storeRepository;
-    // 생성자
-    public StoreService(StoreRepository storeRepository) {
-        this.storeRepository = storeRepository;
-    }
+    private final MenuRepository menuRepository;
+    private final UserRepository userRepository;
+
     // 기능
     // 가게 생성
-    public StoreCreateResponseDto createStoreService(StoreCreateRequestDto storeCreateRequestDto) {
-        log.info("가게를 생성합니다.");
+    // 사장님 권한을 가진 유저만 가게를 최대 3개까지 생성할 수 있다. (예외처리)
+    public StoreCreateResponseDto createStoreService(Long userId, StoreCreateRequestDto storeCreateRequestDto) {
+        /*
+         * 가게 생성전에 사장님 권한을 가진 유저인지 검증
+         * 1. 사장님 권한이 아닌 유저면 가게를 생성할 수 없음(예외처리)
+         * 2. 한 사장님당 가게 3개까지만 만들 수 있음. 유저아이디로 가게 몇개 만들었는지 확인하고 4개째 시도할 때 거절
+         * 먼저 유저 아이디부터 찾아오기
+          */
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+        // 찾은 유저아이디에서 유저타입이 오너가 아니라면 예외처리해버리기
+        // 아래 if문 작성하는데만 2시간정도 걸린듯. 결국 쓰는 방법 찾아냄.
+        if (!user.getUserType().equals(UserType.OWNER)) {
+            throw new RuntimeException("사장님만 창업할 수 있습니다.");
+        }
+        // 가게 3개 넘어가는지 확인. 넘어가면 쳐내기 (이건 솔직히 챗지피티 보고만듦...)(그래도 썼다 지웠다 반복했음...)
+        int countStore = storeRepository.countByUser(user);
+        // 처음에 countStore > 3 라고 했는데 4개까지 만들어지고 5개째에서 예외처리발생됐다. 수식을 이해못하겠다..
+        if (countStore >= 3) {
+            throw new RuntimeException("가게는 3개까지만 생성할 수 있습니다.");
+        }
+        // 스토어 객체 만들기 + 가게 창업한 사장님 유저정보 같이 저장
         Store store = new Store(storeCreateRequestDto.getStoreName(),
                 storeCreateRequestDto.getOpenCloseTime(),
-                storeCreateRequestDto.getDeliveryMinPrice());
+                storeCreateRequestDto.getDeliveryMinPrice(), user);
+        // request값 저장
         Store savedStore = storeRepository.save(store);
-        Long storeId = savedStore.getId();
-        String storeName = savedStore.getStoreName();
-        String openCloseTime = savedStore.getOpenCloseTime();
-        int deliveryMinPrice = savedStore.getDeliveryMinPrice();
-
-        StoreCreateResponseDto storeCreate = new StoreCreateResponseDto("가게가 생성되었습니다.",
-                storeId, storeName, openCloseTime, deliveryMinPrice);
+        StoreCreateResponseDto storeCreate = new StoreCreateResponseDto("가게가 생성되었습니다.", savedStore);
         return storeCreate;
     }
     // 가게 전체 조회
-    public List<StoreGetResponseDto> getAllStoreService() {
+    // 가게 조회시 폐업상태인 가게는 조회안되게 하기
+    public List<AllStoreGetResponseDto> getAllStoreService() {
         //조회 로그
         log.info("전체 가게를 조회합니다.");
         //데이터베이스에서 모두 찾기
         List<Store> storeList = storeRepository.findAll();
         //dtoList로 변환하기 위한 선언
-        List<StoreGetResponseDto> storeGetResponseDtoList = new ArrayList<>();
+        List<AllStoreGetResponseDto> allStoreGetResponseDtoList = new ArrayList<>();
         //storeList 데이터 전부 하나씩 거치면서 가져오기
         for (Store store : storeList) {
-            StoreGetResponseDto storeGetResponseDto = new StoreGetResponseDto(
+            AllStoreGetResponseDto allStoreGetResponseDto = new AllStoreGetResponseDto(
                     store.getId(), store.getStoreName(), store.getOpenCloseTime(), store.getDeliveryMinPrice());
-            storeGetResponseDtoList.add(storeGetResponseDto);
-        } return storeGetResponseDtoList;
+            allStoreGetResponseDtoList.add(allStoreGetResponseDto);
+        } return allStoreGetResponseDtoList;
     }
     // 가게 단건 조회
     public StoreGetResponseDto getStoreService(Long storeId) {
@@ -62,12 +84,9 @@ public class StoreService {
         // 1. 데이터베이스에 storeId로 해당 가게 조회/ 없으면 찾을 수 없다고 안내 메시지(예외처리)
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new RuntimeException("가게를 찾을 수 없습니다."));
+//        menuRepository.findById(menuId);
         // 2. 가게 데이터 불러오기
-        Long id = store.getId();
-        String storeName = store.getStoreName();
-        String openCloseTime = store.getOpenCloseTime();
-        int deliveryMinPrice = store.getDeliveryMinPrice();
-        StoreGetResponseDto storeGetResponseDto = new StoreGetResponseDto(id, storeName, openCloseTime, deliveryMinPrice);
+        StoreGetResponseDto storeGetResponseDto = new StoreGetResponseDto(store);
         return storeGetResponseDto;
     }
     // 가게 수정
@@ -93,12 +112,12 @@ public class StoreService {
     }
     // 가게 삭제
     public void storeClosureService(Long storeId) {
-        log.info("가게 정보를 삭제합니다.");
+        log.info("폐업을 시작합니다.");
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new RuntimeException("가게를 찾을 수 없습니다."));
         log.info("삭제할 가게 찾기");
         store.setDeletedStore(true);
-        log.info("가게 상태 변경");
+        log.info("가게 운영 상태 변경");
         storeRepository.save(store);
     }
 }

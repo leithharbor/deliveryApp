@@ -1,5 +1,6 @@
 package com.example.deliveryApp.store.dto.response;
 
+import com.example.deliveryApp.entity.Store;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -14,12 +15,12 @@ public class StoreCreateResponseDto {
     private int deliveryMinPrice;
 
     // 생성자
-//    public StoreCreateResponseDto (Long id, String storeName, String openCloseTime, int deliveryMinPrice) {
-//        this.id = id;
-//        this.storeName = storeName;
-//        this.openClose = openCloseTime;
-//        this.deliveryMinPrice = deliveryMinPrice;
-//    }
+    public StoreCreateResponseDto(String createMessage, Store savedStore) {
+        this.id = savedStore.getId();
+        this.storeName = savedStore.getStoreName();
+        this.openCloseTime = savedStore.getOpenCloseTime();
+        this.deliveryMinPrice = savedStore.getDeliveryMinPrice();
+    }
     // 기능
 
 }
