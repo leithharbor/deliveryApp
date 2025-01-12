@@ -1,9 +1,9 @@
 package com.example.deliveryApp.store.service;
 
-import com.example.deliveryApp.entity.Store;
+import com.example.deliveryApp.entity.*;
 
-import com.example.deliveryApp.entity.User;
-import com.example.deliveryApp.entity.UserType;
+import com.example.deliveryApp.entity.Menu;
+import com.example.deliveryApp.menu.dto.MenuResponseDto;
 import com.example.deliveryApp.menu.repository.MenuRepository;
 import com.example.deliveryApp.store.dto.request.StoreCreateRequestDto;
 import com.example.deliveryApp.store.dto.request.StoreUpdateRequestDto;
@@ -18,8 +18,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static java.awt.SystemColor.menu;
+
 
 @Slf4j
 @RequiredArgsConstructor
@@ -56,20 +61,26 @@ public class StoreService {
         // 스토어 객체 만들기 + 가게 창업한 사장님 유저정보 같이 저장
         Store store = new Store(storeCreateRequestDto.getStoreName(),
                 storeCreateRequestDto.getOpenCloseTime(),
-                storeCreateRequestDto.getDeliveryMinPrice(), user);
-        // request값 저장
+                storeCreateRequestDto.getDeliveryMinPrice());
+        // request 값 저장
         Store savedStore = storeRepository.save(store);
         StoreCreateResponseDto storeCreate = new StoreCreateResponseDto("가게가 생성되었습니다.", savedStore);
         return storeCreate;
     }
     // 가게 전체 조회
     // 가게 조회시 폐업상태인 가게는 조회안되게 하기
-    public List<AllStoreGetResponseDto> getAllStoreService() {
+    public List<AllStoreGetResponseDto> getAllStoreService(Long storeId) {
+//        Store findStore = storeRepository.findById(storeId)
+//                .orElseThrow(() -> new RuntimeException("가게를 찾을 수 없습니다."));
+//        boolean deletedStore = findStore.isDeletedStore();
+//        if (!deletedStore == false) {
+//
+//        }
         //조회 로그
         log.info("전체 가게를 조회합니다.");
-        //데이터베이스에서 모두 찾기
-        List<Store> storeList = storeRepository.findAll();
-        //dtoList로 변환하기 위한 선언
+        //데이터베이스(레포지토리)에서 StoreStatus OPENED인 상태인 애들 조회하기
+        List<Store> storeList = storeRepository.findAllByStoreStatus(StoreStatus.OPENED);
+        //dto List로 변환하기 위한 선언
         List<AllStoreGetResponseDto> allStoreGetResponseDtoList = new ArrayList<>();
         //storeList 데이터 전부 하나씩 거치면서 가져오기
         for (Store store : storeList) {
@@ -84,9 +95,27 @@ public class StoreService {
         // 1. 데이터베이스에 storeId로 해당 가게 조회/ 없으면 찾을 수 없다고 안내 메시지(예외처리)
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new RuntimeException("가게를 찾을 수 없습니다."));
-//        menuRepository.findById(menuId);
+        log.info("Received ID: {}", storeId);
+        List<Menu> menuList = menuRepository.findAllByStoreId(storeId);
+
+        List<MenuResponseDto> menuResponseDtoList = menuList.stream().map(menu -> new MenuResponseDto(
+                        menu.getId(),
+                        menu.getMenuName(),
+                        menu.getPrice()))
+                .collect(Collectors.toList());
+
+//        if (!menu.getStore().getId().equals(storeId)) {
+//            throw new RuntimeException("잘못 매칭된 메뉴");
+//        }
+//        List<Menu> menuList = menuRepository.findAll();
+//        List<MenuResponseDto> menuResponseDtoList = new ArrayList<>();
+//        for (Menu menu1 : menuList) {
+//            MenuResponseDto menuResponseDto = new MenuResponseDto(menu);
+//            menuResponseDtoList.add(menuResponseDto);
+//        }
+//        log.info("Received ID: {}", menu.getId());
         // 2. 가게 데이터 불러오기
-        StoreGetResponseDto storeGetResponseDto = new StoreGetResponseDto(store);
+        StoreGetResponseDto storeGetResponseDto = new StoreGetResponseDto(store, menuResponseDtoList);
         return storeGetResponseDto;
     }
     // 가게 수정
@@ -110,14 +139,23 @@ public class StoreService {
         log.info("333333");
         return storeUpdateResponseDto;
     }
-    // 가게 삭제
-    public void storeClosureService(Long userId, Long storeId) {
-        log.info("폐업을 시작합니다.");
+    // 가게 운영 상태 운영중(개업)으로 변경
+    public void startStoreService(Long userId, Long storeId) {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new RuntimeException("가게를 찾을 수 없습니다."));
-        log.info("삭제할 가게 찾기");
-        store.setDeletedStore(true);
-        log.info("가게 운영 상태 변경");
+        store.setStoreStatus(StoreStatus.OPENED);
+        storeRepository.save(store);
+//        StoreStatus opened = store.getStoreStatus().OPENED;
+    }
+
+    // 가게 폐업
+    public void storeClosureService(Long userId, Long storeId) {
+        log.info("가게 상태를 변경합니다.");
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new RuntimeException("가게를 찾을 수 없습니다."));
+        log.info("상태 변경할 가게 찾기");
+        store.setStoreStatus(StoreStatus.SHUTDOWN);
+        log.info("가게 운영중으로 상태 변경");
         storeRepository.save(store);
     }
 }

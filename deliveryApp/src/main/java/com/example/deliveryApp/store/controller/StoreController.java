@@ -1,5 +1,6 @@
 package com.example.deliveryApp.store.controller;
 
+import com.example.deliveryApp.entity.Menu;
 import com.example.deliveryApp.entity.User;
 import com.example.deliveryApp.session.SessionConst;
 import com.example.deliveryApp.store.dto.request.StoreCreateRequestDto;
@@ -44,8 +45,8 @@ public class StoreController {
     }
     // 가게 전체 조회
     @GetMapping
-    public ResponseEntity<List<AllStoreGetResponseDto>> getAllStoreAPI() {
-        List<AllStoreGetResponseDto> allStoresGot = storeService.getAllStoreService();
+    public ResponseEntity<List<AllStoreGetResponseDto>> getAllStoreAPI(Long storeId) {
+        List<AllStoreGetResponseDto> allStoresGot = storeService.getAllStoreService(storeId);
         return new ResponseEntity<>(allStoresGot, HttpStatus.OK);
     }
     // 가게 단건 조회
@@ -67,6 +68,19 @@ public class StoreController {
         }
         StoreUpdateResponseDto storeUpdated = storeService.updateStoreService(userId, storeId, storeUpdateRequestDto);
         return ResponseEntity.ok(storeUpdated);
+    }
+    // 가게 운영 상태 운영중(개업)으로 변경
+    @PatchMapping("/open/{storeId}")
+    public ResponseEntity<String> startStoreAPI(HttpServletRequest request, @PathVariable ("storeId") Long storeId) {
+        // 서블릿 리퀘스트로 세션값받아오기/ 객체화
+        // 가게 주인만 가게 상태변경 가능
+        HttpSession session = request.getSession();
+        Long userId = (Long) session.getAttribute(SessionConst.LOGIN_USER_ID);
+        if (userId == null) {
+            throw new RuntimeException("사용자 정보를 확인할 수 없습니다.");
+        }
+        storeService.startStoreService(userId, storeId);
+        return ResponseEntity.ok("가게를 오픈했습니다.");
     }
     // 가게 삭제
     @DeleteMapping("/{storeId}")

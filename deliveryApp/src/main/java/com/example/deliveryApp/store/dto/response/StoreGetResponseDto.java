@@ -1,8 +1,12 @@
 package com.example.deliveryApp.store.dto.response;
 
+import com.example.deliveryApp.entity.Menu;
 import com.example.deliveryApp.entity.Store;
+import com.example.deliveryApp.menu.dto.MenuResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
+import java.util.List;
 
 @Getter
 @AllArgsConstructor
@@ -15,20 +19,14 @@ public class StoreGetResponseDto {
     private String storeName;
     private String openCloseTime;
     private int deliveryMinPrice;
-    private long menuId;
-    // 생성자
-//    public StoreGetResponseDto(Long id, String storeName, String openCloseTime, int deliveryMinPrice) {
-//        this.id = id;
-//        this.storeName = storeName;
-//        this.openCloseTime = openCloseTime;
-//        this.deliveryMinPrice = deliveryMinPrice;
-//    }
+    private List<MenuResponseDto> menuList;
 
-    public StoreGetResponseDto(Store store) {
+    public StoreGetResponseDto(Store store, List<MenuResponseDto> menuList) {
         this.id = store.getId();
         this.storeName = store.getStoreName();
         this.openCloseTime = store.getOpenCloseTime();
         this.deliveryMinPrice = store.getDeliveryMinPrice();
+        this.menuList = menuList;
     }
 
 

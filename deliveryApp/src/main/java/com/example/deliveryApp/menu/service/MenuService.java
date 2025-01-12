@@ -70,6 +70,7 @@ import com.example.deliveryApp.entity.Store;
 import com.example.deliveryApp.menu.dto.MenuRequestDto;
 import com.example.deliveryApp.menu.dto.MenuResponseDto;
 import com.example.deliveryApp.menu.repository.MenuRepository;
+import com.example.deliveryApp.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
@@ -79,14 +80,15 @@ import jakarta.transaction.Transactional;
 public class MenuService {
 
     private final MenuRepository menuRepository;
-    //private final StoreRepository storeRepository;
+    private final StoreRepository storeRepository;
 
     // 메뉴 생성
     public MenuResponseDto createMenu(MenuRequestDto menuRequestDto) {
         //가게 조회
-        //Store store = storeRepository.findByIdOrElseThrow(menuRequestDto.getStoreId());
+        Store store = storeRepository.findById(menuRequestDto.getStoreId())
+                .orElseThrow(()-> new RuntimeException("가게를 찾을 수 없습니다."));
         // 아직 없어서 Store를 null로 처리
-        Menu menu = new Menu(menuRequestDto.getMenuName(), menuRequestDto.getPrice(), null);
+        Menu menu = new Menu(menuRequestDto.getMenuName(), menuRequestDto.getPrice(), store);
 
         // 메뉴 저장
         menuRepository.save(menu);

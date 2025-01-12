@@ -10,9 +10,9 @@ public class MenuRequestDto {
 
     private String menuName;
     private int price;
-    private int storeId;
+    private Long storeId;
 
-    public MenuRequestDto(String menuName, int price, int storeId) {
+    public MenuRequestDto(String menuName, int price, Long storeId) {
         this.menuName = menuName;
         this.price = price;
         this.storeId = storeId;

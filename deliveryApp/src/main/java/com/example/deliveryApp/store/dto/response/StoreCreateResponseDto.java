@@ -16,6 +16,7 @@ public class StoreCreateResponseDto {
 
     // 생성자
     public StoreCreateResponseDto(String createMessage, Store savedStore) {
+        this.createMessage = createMessage;
         this.id = savedStore.getId();
         this.storeName = savedStore.getStoreName();
         this.openCloseTime = savedStore.getOpenCloseTime();
