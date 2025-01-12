@@ -2,6 +2,7 @@ package com.example.deliveryApp.order.controller;
 
 import java.util.List;
 
+import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -33,9 +34,9 @@ public class OrderController {
 
 	//주문 생성
 	@PostMapping
-	public ResponseEntity<OrderCreateResponseDto> createOrder (@RequestBody OrderCreateRequestDto requestDto) {
+	public ResponseEntity<OrderCreateResponseDto> createOrder (@RequestBody OrderCreateRequestDto requestDto, HttpSession session) {
 
-		OrderCreateResponseDto orderCreateResponseDto = orderService.createOrder(requestDto);
+		OrderCreateResponseDto orderCreateResponseDto = orderService.createOrder(requestDto, session);
 
 		return new ResponseEntity<>(orderCreateResponseDto,HttpStatus.OK);
 	}
