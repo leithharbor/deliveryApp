@@ -2,6 +2,7 @@ package com.example.deliveryApp.order.controller;
 
 import java.util.List;
 
+import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,7 +13,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.example.deliveryApp.order.dto.OrderCancleResponseDto;
 import com.example.deliveryApp.order.dto.OrderCreateRequestDto;
 import com.example.deliveryApp.order.dto.OrderCreateResponseDto;
@@ -33,36 +33,36 @@ public class OrderController {
 
 	//주문 생성
 	@PostMapping
-	public ResponseEntity<OrderCreateResponseDto> createOrder (@RequestBody OrderCreateRequestDto requestDto) {
+	public ResponseEntity<OrderCreateResponseDto> createOrder (@RequestBody OrderCreateRequestDto requestDto, HttpSession session) {
 
-		OrderCreateResponseDto orderCreateResponseDto = orderService.createOrder(requestDto);
+		OrderCreateResponseDto orderCreateResponseDto = orderService.createOrder(requestDto, session);
 
 		return new ResponseEntity<>(orderCreateResponseDto,HttpStatus.OK);
 	}
 
 	//주문 상태 변경
 	@PatchMapping("/{orderId}")
-	public ResponseEntity<OrderStatusChangeResponseDto> changeOrderStatus (@PathVariable(name = "orderId") Long orderId, @Valid @RequestBody OrderStatusChangeRequestDto requestDto) {
+	public ResponseEntity<OrderStatusChangeResponseDto> changeOrderStatus (@PathVariable(name = "orderId") Long orderId, @Valid @RequestBody OrderStatusChangeRequestDto requestDto, HttpSession session) {
 
-		OrderStatusChangeResponseDto orderStatusChangeResponseDto = orderService.changeOrderStatus(orderId, requestDto);
+		OrderStatusChangeResponseDto orderStatusChangeResponseDto = orderService.changeOrderStatus(orderId, requestDto, session);
 
 		return new ResponseEntity<>(orderStatusChangeResponseDto, HttpStatus.OK);
 	}
 
 	//주문 내역(조회)
 	@GetMapping
-	public ResponseEntity<List<OrderDetailResponseDto>> lookupOrdersAPI () {
+	public ResponseEntity<List<OrderDetailResponseDto>> lookupOrdersAPI (HttpSession session) {
 
-		List<OrderDetailResponseDto> responseDtoList = orderService.lookupOrders();
+		List<OrderDetailResponseDto> responseDtoList = orderService.lookupOrders(session);
 
 		return new ResponseEntity<>(responseDtoList, HttpStatus.OK);
 	}
 
 	//주문 취소
 	@DeleteMapping("/{orderId}")
-	public ResponseEntity<OrderCancleResponseDto> orderCancelAPI(@PathVariable(name = "orderId") Long orderId) {
+	public ResponseEntity<OrderCancleResponseDto> orderCancelAPI(@PathVariable(name = "orderId") Long orderId, HttpSession session) {
 
-		OrderCancleResponseDto responseDto = orderService.orderCancel(orderId);
+		OrderCancleResponseDto responseDto = orderService.orderCancel(orderId, session);
 
 		return new ResponseEntity<>(responseDto, HttpStatus.OK);
 	}
