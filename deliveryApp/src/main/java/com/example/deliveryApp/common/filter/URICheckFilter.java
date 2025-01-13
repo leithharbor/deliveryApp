@@ -19,21 +19,14 @@ public class URICheckFilter implements Filter {
         ALLOWED_PATTERNS.add(Pattern.compile("^/users/\\d+$"));
         ALLOWED_PATTERNS.add(Pattern.compile("^/users/login$"));
         ALLOWED_PATTERNS.add(Pattern.compile("^/users/logout$"));
-        ALLOWED_PATTERNS.add(Pattern.compile("^/users/profile/\\d+$"));
-        ALLOWED_PATTERNS.add(Pattern.compile("^/users/follow/\\d+$"));
-        ALLOWED_PATTERNS.add(Pattern.compile("^/users/follow/\\d+/followers$"));
-        ALLOWED_PATTERNS.add(Pattern.compile("^/users/follow/\\d+/followings$"));
-        ALLOWED_PATTERNS.add(Pattern.compile("^/users/profile/\\d+$"));
-        ALLOWED_PATTERNS.add(Pattern.compile("^/feed$"));
-        ALLOWED_PATTERNS.add(Pattern.compile("^/feed/\\d+$"));
-        ALLOWED_PATTERNS.add(Pattern.compile("^/feed/page/\\d+$"));
-        ALLOWED_PATTERNS.add(Pattern.compile("^/feed/dateRange/\\d+$"));
-        ALLOWED_PATTERNS.add(Pattern.compile("^/feed/\\d+/comments$"));
-        ALLOWED_PATTERNS.add(Pattern.compile("^/feed/\\d+/comments/\\d+$"));
-        ALLOWED_PATTERNS.add(Pattern.compile("^/feed/\\d+/comments/\\d+/\\d+/like$"));
-        ALLOWED_PATTERNS.add(Pattern.compile("^/feed/\\d+/like$"));
-        ALLOWED_PATTERNS.add(Pattern.compile("^/feed/\\d+/\\d+/like$"));
-        ALLOWED_PATTERNS.add(Pattern.compile("^/feed/follow/\\d+$"));
+        ALLOWED_PATTERNS.add(Pattern.compile("^/stores$"));
+        ALLOWED_PATTERNS.add(Pattern.compile("^/stores/\\d+$"));
+        ALLOWED_PATTERNS.add(Pattern.compile("^/menus$"));
+        ALLOWED_PATTERNS.add(Pattern.compile("^/menus/\\d+$"));
+        ALLOWED_PATTERNS.add(Pattern.compile("^/orders$"));
+        ALLOWED_PATTERNS.add(Pattern.compile("^/orders/\\d+$"));
+        ALLOWED_PATTERNS.add(Pattern.compile("^/reviews$"));
+        ALLOWED_PATTERNS.add(Pattern.compile("^/riviews\\d+$"));
 
     }
 
