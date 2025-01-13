@@ -1,7 +1,7 @@
 package com.example.deliveryApp.entity;
 
 import jakarta.persistence.*;
-        import lombok.Getter;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
@@ -40,4 +40,3 @@ public class Review {
         this.createdAt = LocalDateTime.now();
     }
 }
-
