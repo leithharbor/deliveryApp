@@ -43,7 +43,7 @@ public class ReviewService {
         }
 
         // Store 조회
-        Long storeId = order.getMenu().getStoreId();
+        Long storeId = order.getMenu().getStore().getId();
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new IllegalArgumentException("가게를 찾을 수 없습니다."));
 
