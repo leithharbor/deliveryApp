@@ -1,5 +1,6 @@
 package com.example.deliveryApp.store.dto.request;
 
+import com.example.deliveryApp.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -10,6 +11,7 @@ public class StoreCreateRequestDto {
     private String storeName;
     private String openCloseTime;
     private int deliveryMinPrice;
+    private User user;
 
     // 생성자
 //    public StoreCreateRequestDto (String storeName, String openCloseTime, int deliveryMinPrice) {
