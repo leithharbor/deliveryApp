@@ -6,6 +6,6 @@ import com.example.deliveryApp.common.exception.ResponseCode;
 //비밀번호 불 일치 예외
 public class PasswordAuthFailException extends BaseException {
     public PasswordAuthFailException() {
-        super(ResponseCode.PASSWORD_MISMATCH );
+        super(ResponseCode.PASSWORD_MISMATCH);
     }
 }

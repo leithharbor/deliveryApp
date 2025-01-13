@@ -74,6 +74,7 @@ import com.example.deliveryApp.menu.dto.MenuResponseDto;
 import com.example.deliveryApp.menu.repository.MenuRepository;
 import com.example.deliveryApp.store.repository.StoreRepository;
 import com.example.deliveryApp.user.repository.UserRepository;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
@@ -112,6 +113,7 @@ public class MenuService {
         Store store = storeRepository.findById(menuRequestDto.getStoreId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 가게를 찾을 수 없습니다."));
 
+        // 아직 없어서 Store를 null로 처리
         Menu menu = new Menu(menuRequestDto.getMenuName(), menuRequestDto.getPrice(), store);
 
         // 메뉴 저장

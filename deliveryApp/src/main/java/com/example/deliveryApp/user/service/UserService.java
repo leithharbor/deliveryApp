@@ -1,11 +1,13 @@
 package com.example.deliveryApp.user.service;
 
+import com.example.deliveryApp.common.exception.ResponseCode;
 import com.example.deliveryApp.entity.User;
 import com.example.deliveryApp.user.dto.SignUpRequestDto;
 import com.example.deliveryApp.user.dto.UserLoginRequestDto;
 import com.example.deliveryApp.user.encoder.PasswordEncoder;
 import com.example.deliveryApp.user.exception.EmailDuplicateCheckException;
 import com.example.deliveryApp.user.exception.PasswordAuthFailException;
+import com.example.deliveryApp.user.exception.UserDeleteAlreadyException;
 import com.example.deliveryApp.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -46,14 +48,17 @@ public class UserService {
     // 회원탈퇴 기능
     @Transactional
     public void disableAccount(Long userId, String password) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
+        User user = findById(userId);
+
         // 비밀번호가 불일치 할 시 반환 로직
         if(!passwordEncoder.matches(password, user.getPassword())) {
             throw new PasswordAuthFailException();
         }
-        // 이미 탈퇴한 유저의 이메일일시 반환 로직
-//        if(user.getUserEmail().)
+
+        //이미 탈퇴한 유저일 시 반환 로직
+        if (!user.isDelete()) {
+            throw new UserDeleteAlreadyException();
+        }
 
         // 비밀번호가 일치 할 시 반환 로직
         user.setDelete(true);
@@ -71,4 +76,11 @@ public class UserService {
         }
         return user;
     }
+
+    public User findById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
+    }
 }
+
+
