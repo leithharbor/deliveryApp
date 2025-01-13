@@ -82,7 +82,7 @@ public class OrderService {
 		//현재 시간
 		LocalTime now = LocalTime.now();
 
-		//오픈시간 이전이거나, 클로즈시간 이후일 때 실행
+		//오픈시간 이전이거나, 클로즈시간 이후일 때 실행 ㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜ
 		if (now.isBefore(openTime) || now.isAfter(closeTime)) {
 			throw new BusinessHoursDiscrepancyException();
 		}
