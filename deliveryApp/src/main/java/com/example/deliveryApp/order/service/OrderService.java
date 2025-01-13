@@ -4,10 +4,14 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.example.deliveryApp.entity.User;
+import com.example.deliveryApp.entity.UserType;
+import com.example.deliveryApp.order.exception.*;
+import com.example.deliveryApp.user.repository.UserRepository;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
 import com.example.deliveryApp.entity.Menu;
 import com.example.deliveryApp.entity.Order;
 import com.example.deliveryApp.menu.repository.MenuRepository;
@@ -28,23 +32,43 @@ public class OrderService {
 
 	private final OrderRepository orderRepository;
 	private final MenuRepository menuRepository;
+	private final UserRepository userRepository;
+
+	public void logging(Long orderId, Long storeId) {
+	}
 
 	//주문 생성 API
-	public OrderCreateResponseDto createOrder(OrderCreateRequestDto requestDto) {
+	public OrderCreateResponseDto createOrder(OrderCreateRequestDto requestDto, HttpSession session) {
+
+		//로그인 확인
+		if(session == null) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"로그인하지 않았습니다. 로그인 먼저 진행해주세요.");
+		}
+
+		//세션에서 userId 가져오기
+		Long userId = (Long) session.getAttribute("loginUserId");
+
+		//user Id로 user 조회
+		User sessionUser = userRepository.findById(userId)
+				.orElseThrow(() -> new UserExistenceCheckException());
+
+		//권한 존재 확인(유저)
+		if (sessionUser.getUserType() == UserType.OWNER) {
+			throw new PrivilegeExistenceVerificationException();
+		}
 
 		//menu가 존재하는지 확인
 		Menu menu = menuRepository.findById(requestDto.getMenuId())
-			.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
+				.orElseThrow(() -> new MenuExistenceCheckException());
 
 		//store에 있는 menu가 맞는지 확인
 		if (!menu.getStore().getId().equals(requestDto.getStoreId())) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "가게에서 해당 메뉴를 찾을 수 없습니다.");
+			throw new MenuExistenceCheckException();
 		}
 
 		//최소 주문 금액 불충족 403 Forbidden
 		if (menu.getPrice() < menu.getStore().getDeliveryMinPrice()) {
-			throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-				"최소 주문 금액을 맞춰주세요. 최소 주문 금액 : " + menu.getStore().getDeliveryMinPrice());
+			throw new TotalOrderAmountUnfulfilledException();
 		}
 
 		//오픈-마감시간 오류 403 Forbidden
@@ -58,27 +82,38 @@ public class OrderService {
 		//현재 시간
 		LocalTime now = LocalTime.now();
 
-		//오픈시간 이전이거나, 클로즈시간 이후일 때 실행
+		//오픈시간 이전이거나, 클로즈시간 이후일 때 실행 ㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜ
 		if (now.isBefore(openTime) || now.isAfter(closeTime)) {
-			throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-				"영업시간을 확인해주세요. 영업시간 : " + menu.getStore().getOpenCloseTime());
+			throw new BusinessHoursDiscrepancyException();
 		}
 
 		//주문 생성
-		Order order = new Order(menu, menu.getPrice());
+		Order order = new Order(menu, sessionUser, menu.getPrice());
 
 		//생성 한 주문 저장
 		orderRepository.save(order);
 
-		return new OrderCreateResponseDto("요청이 정상적으로 처리되었습니다.", order.getTotalPaymentPrice(),order.getOrderedAt());
+		return new OrderCreateResponseDto("주문이 완료되었습니다.",menu.getStore().getStoreName(), order.getId(), order.getTotalPaymentPrice(),order.getOrderedAt());
 	}
 
 	//주문 상태 변경 API
-	public OrderStatusChangeResponseDto changeOrderStatus(Long orderId, OrderStatusChangeRequestDto requestDto) {
+	public OrderStatusChangeResponseDto changeOrderStatus(Long orderId, OrderStatusChangeRequestDto requestDto, HttpSession session) {
+
+		//세션에서 userId 가져오기
+		Long userId = (Long) session.getAttribute("loginUserId");
+
+		//user Id로 user 조회
+		User sessionUser = userRepository.findById(userId)
+				.orElseThrow(() -> new UserExistenceCheckException());
+
+		//권한 존재 확인(사장님)
+		if (sessionUser.getUserType() == UserType.USER) {
+			throw new PrivilegeExistenceVerificationException();
+		}
 
 		//id로 order 조회
 		Order order = orderRepository.findById(orderId)
-			.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "존재하지 않는 주문번호입니다."));
+			.orElseThrow(() -> new MenuExistenceCheckException());
 
 		//현재 주문상태와 변경하려는 주문상태가 같은지 확인
 		if(order.getOrderStatus() == requestDto.getOrderStatus()) {
@@ -94,10 +129,14 @@ public class OrderService {
 		// 변경 후 DB에 저장
 		orderRepository.save(order);
 
+		Long storeId = order.getMenu().getStore().getId();
+
+		logging(orderId, storeId);
+
 		//주문상태를 REJECTED로 변경하는 경우 reason 포함 응답 반환
 		if (requestDto.getOrderStatus() == OrderStatus.REJECTED) {
 			if (requestDto.getReason() == null) {
-				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "주문 거절 시 거절 사유는 필수 입력값 입니다");
+				throw new RejectReasonCheckException();
 			}
 			return new OrderStatusChangeResponseDto(requestDto.getReason());
 		}
@@ -107,9 +146,16 @@ public class OrderService {
 	}
 
 	//주문 내역 조회 API
-	public List<OrderDetailResponseDto> lookupOrders() {
+	public List<OrderDetailResponseDto> lookupOrders(HttpSession session) {
 
-		List<Order> orderList = orderRepository.findAll();
+		//세션에서 userId 가져오기
+		Long userId = (Long) session.getAttribute("loginUserId");
+
+		//user Id로 user 조회
+		User sessionUser = userRepository.findById(userId)
+				.orElseThrow(() -> new UserExistenceCheckException());
+
+		List<Order> orderList = orderRepository.findAllByUser_UserId(userId);
 
 		List<OrderDetailResponseDto> responseDtoList = orderList.stream().map(order -> new OrderDetailResponseDto(
 				order.getId(),
@@ -123,16 +169,38 @@ public class OrderService {
 	}
 
 	//주문 취소
-	public OrderCancleResponseDto orderCancel(Long orderId) {
+	public OrderCancleResponseDto orderCancel(Long orderId, HttpSession session) {
 
+		//세션에서 userId 가져오기
+		Long userId = (Long) session.getAttribute("loginUserId");
+
+		//user Id로 user 조회
+		User sessionUser = userRepository.findById(userId)
+				.orElseThrow(() -> new UserExistenceCheckException());
+
+		//권한 존재 확인(유저)
+		if (sessionUser.getUserType() == UserType.OWNER) {
+			throw new PrivilegeExistenceVerificationException();
+		}
+
+		// 주문 id 확인
 		Order foundOrder = orderRepository.findById(orderId)
-			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당하는 id의 주문번호가 없습니다."));
+			.orElseThrow(() -> new MenuExistenceCheckException());
+
+		// 이미 취소처리 된 주문 확인
+		if(foundOrder.getOrderStatus() == OrderStatus.CANCELLED) {
+			throw new OrderAlreadCancledException();
+		}
 
 		foundOrder.changeOrderStatus(OrderStatus.CANCELLED);
 
 		orderRepository.save(foundOrder);
 
-		return new OrderCancleResponseDto("요청이 정상적으로 처리되었습니다.");
+		Long storeId = foundOrder.getMenu().getStore().getId();
+
+		logging(orderId, storeId);
+
+		return new OrderCancleResponseDto("주문이 취소되었습니다.");
 	}
 
 }

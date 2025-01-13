@@ -5,6 +5,10 @@ import com.example.deliveryApp.Review.dto.ReviewResponseDto;
 import com.example.deliveryApp.Review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,7 +24,7 @@ public class ReviewController {
     @PostMapping
     public ResponseEntity<ReviewResponseDto> createReview(@RequestBody ReviewRequestDto reviewRequestDto) {
         ReviewResponseDto reviewResponseDto = reviewService.createReview(reviewRequestDto);
-        return ResponseEntity.ok(reviewService.createReview(reviewRequestDto));
+        return ResponseEntity.ok(reviewResponseDto);
     }
 
     // 리뷰 조회
