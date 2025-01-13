@@ -9,6 +9,8 @@ import lombok.Getter;
 public class OrderCreateResponseDto {
 
 	private String message;
+	private String storeName;
+	private Long orderId;
 	private int totalPaymentPrice;
 	private LocalDateTime orderedAt;
 }
